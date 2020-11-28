@@ -7,21 +7,19 @@ const links = [
 
 export default function Nav() {
   return (
-    <nav>
+    <nav className="bg-green-700"> 
       <ul className="flex justify-between items-center p-8">
-        <li>
-          <Link href="/">
-            <a className="text-blue-500 no-underline">Home</a>
-          </Link>
-        </li>
         <ul className="flex justify-between items-center space-x-4">
-          {links.map(({ href, label }) => (
-            <li key={`${href}${label}`}>
-              <a href={href} className="btn-blue no-underline">
-                {label}
-              </a>
-            </li>
-          ))}
+          <li>
+            <Link href="/">
+              <a className="text-white no-underline">Home</a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/sobre">
+              <a className="text-white no-underline ">Sobre Nós</a>
+            </Link>
+          </li>
         </ul>
       </ul>
     </nav>
