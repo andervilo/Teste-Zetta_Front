@@ -16,8 +16,8 @@ export default function Nav() {
             </Link>
           </li>
           <li>
-            <Link href="/sobre">
-              <a className="text-white no-underline ">Sobre Nós</a>
+            <Link href="/usuarios">
+              <a className="text-white no-underline ">Usuários</a>
             </Link>
           </li>
         </ul>
