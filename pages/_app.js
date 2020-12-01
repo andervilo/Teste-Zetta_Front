@@ -5,7 +5,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Nav />
-      <div className="">
+      <div className="max-w-screen-lg   mx-auto">
         <Component {...pageProps} />
       </div>
     </>

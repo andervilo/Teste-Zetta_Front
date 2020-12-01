@@ -7,8 +7,8 @@ const links = [
 
 export default function Nav() {
   return (
-    <nav className="bg-green-700"> 
-      <ul className="flex justify-between items-center p-8">
+    <nav className="bg-blue-900"> 
+      <ul className="flex justify-between items-center p-4 max-w-screen-lg   mx-auto">
         <ul className="flex justify-between items-center space-x-4">
           <li>
             <Link href="/">
@@ -18,6 +18,16 @@ export default function Nav() {
           <li>
             <Link href="/usuarios">
               <a className="text-white no-underline ">Usuários</a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/cargos">
+              <a className="text-white no-underline ">Cargos</a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/perfis">
+              <a className="text-white no-underline ">Perfis</a>
             </Link>
           </li>
         </ul>
