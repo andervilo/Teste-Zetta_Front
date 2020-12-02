@@ -19,6 +19,28 @@ const perfisUsuario = () => {
     );
   };
 
+  const deletePerfil = async (id) =>{
+    const excluir = confirm(`Deseja excluir o Registro #${id}?`);
+
+    if(!excluir)
+      return;
+    
+    await axios.delete(`${url}/${id}`).then(res => {
+      alert("Registro excluido!");
+      getPerfis();
+    }).catch(error =>{
+        if ('fieldErrors' in error.response.data){
+            alert(error.response.data.fieldErrors.nome);
+        }else if(error.response.data.status == 400){
+            alert(error.response.data.message);
+        }else if(error.response.data.status == 500){
+            alert(error.response.data.message);
+        }else if(error.response.data.status == 404){
+          alert(error.response.data.message);
+      }
+    });
+  }
+
   return (
     <>
       <div className="flex flex-col">
@@ -59,7 +81,10 @@ const perfisUsuario = () => {
                               <a className="text-indigo-600 hover:text-indigo-900">Visualizar </a>
                             </Link>|
                             <Link href={{ pathname: "/perfis/[id]/editar", query: { id: perfil.id } }}>
-                              <a href="#" className="text-indigo-600 hover:text-indigo-900"> Editar</a>
+                              <a href="#" className="text-indigo-600 hover:text-indigo-900"> Editar </a>
+                            </Link>|
+                            <Link href="#" >
+                              <a onClick={() => deletePerfil(perfil.id)} className="text-red-600 hover:text-indigo-900"> Excluir</a>
                             </Link>
                           </td>
                         </tr>

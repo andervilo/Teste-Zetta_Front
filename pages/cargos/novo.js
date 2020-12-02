@@ -6,9 +6,6 @@ import Link from 'next/link'
 import Router from 'next/router'
 
 const criarCargo = () => {
-    const router = useRouter();
-    const { id } = router.query;
-    const [cargo, setCargo] = useState({});
     const [nome, setNome] = useState();
     
     const url = `${API_URL}/cargos`;

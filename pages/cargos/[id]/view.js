@@ -28,12 +28,12 @@ const detailCargo = () => {
         <table class="table-auto">
             <tbody>
                 <tr>
-                    <td className="text-2xl px-3">Id:</td>
-                    <td className="text-2xl px-3 ">{cargo.id}</td>
+                    <td className="text-1x1 px-3">Id:</td>
+                    <td className="text-1x1 px-3 ">{cargo.id}</td>
                 </tr>
                 <tr className="bg-blue-200">
-                    <td className="text-2xl px-3">Nome:</td>
-                    <td className="text-2xl px-3 bg-blue-200">{cargo.nome}</td>
+                    <td className="text-1x1 px-3">Nome:</td>
+                    <td className="text-1x1 px-3 bg-blue-200">{cargo.nome}</td>
                 </tr>
             </tbody>
         </table>

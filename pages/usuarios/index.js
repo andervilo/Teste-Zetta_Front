@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Nav from '../components/nav';
-import '../shared/variables';
-import { API_URL } from '../shared/variables';
+import { API_URL } from '../../shared/variables';
 import Link from 'next/link';
 
 const usuarios = () => {
@@ -20,6 +18,28 @@ const usuarios = () => {
     }
     );
   };
+
+  const deleteUser = async (id) =>{
+    const excluir = confirm(`Deseja excluir o Registro #${id}?`);
+
+    if(!excluir)
+      return;
+    
+    await axios.delete(`${url}/${id}`).then(res => {
+      alert("Registro excluido!");
+      getUsers();
+    }).catch(error =>{
+        if ('fieldErrors' in error.response.data){
+            alert(error.response.data.fieldErrors.nome);
+        }else if(error.response.data.status == 400){
+            alert(error.response.data.message);
+        }else if(error.response.data.status == 500){
+            alert(error.response.data.message);
+        }else if(error.response.data.status == 404){
+          alert(error.response.data.message);
+      }
+    });
+  }
 
   return (
     <>
@@ -67,11 +87,14 @@ const usuarios = () => {
                             <div className="text-sm text-gray-900">{user.cargoNome}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <Link href={`/${user.id}/view`}>
-                              <a href="#" className="text-indigo-600 hover:text-indigo-900">Edit</a>
-                            </Link>
-                            <Link href={`/${user.id}/view`}>
-                              <a href="#" className="text-indigo-600 hover:text-indigo-900">Edit</a>
+                            <Link href={{ pathname: "/usuarios/[id]/view", query: { id: user.id } }}>
+                              <a className="text-indigo-600 hover:text-indigo-900">Visualizar </a>
+                            </Link>|
+                            <Link href={{ pathname: "/usuarios/[id]/editar", query: { id: user.id } }}>
+                              <a href="#" className="text-indigo-600 hover:text-indigo-900"> Editar </a>
+                            </Link>|
+                            <Link href="#" >
+                              <a onClick={() => deleteUser(user.id)} className="text-red-600 hover:text-indigo-900"> Excluir</a>
                             </Link>
                           </td>
                         </tr>
