@@ -110,7 +110,7 @@ const editarUser = () => {
         evt.preventDefault();
         console.log(userUpdate)
         
-        await axios.put(url,{userUpdate}).then(res => {
+        await axios.put(url,userUpdate).then(res => {
             Router.push("/usuarios");
         }).catch(error =>{
             console.log(error.response)
