@@ -8,7 +8,6 @@ import Router from 'next/router'
 const editarUser = () => {
     const router = useRouter();
     const { id } = router.query;
-    const [sexo, setSexo] = useState();
     const [cargos, setCargos] = useState([]);
     const [perfis, setPerfis] = useState([]);
     const [user, setUser] = useState({
@@ -19,9 +18,6 @@ const editarUser = () => {
         dataNascimento: "",
         cargoNome: 0,
         perfis: [
-            {
-                id: 0
-            }
         ]
     });
     const [userUpdate,setUserUpdate] = useState({
@@ -33,7 +29,7 @@ const editarUser = () => {
         cargoId: 0,
         perfis: [ ]
     })
-    const [nome, setNome] = useState();
+    const [prevPerfis, setPrevPerfis] = useState([]);
     
     const url = `${API_URL}/usuarios/${id}`;
 
@@ -60,6 +56,26 @@ const editarUser = () => {
         
         if(cargos.length <= 0){
             getCargos();
+        }
+
+        if(perfis.length <= 0){
+            getPerfis();
+        }
+
+        if(userUpdate.perfis.length === 0 && user.perfis.length > 0){
+            let handlePrevPerfis = [];
+            const options = user.perfis;
+
+            for (var i = 0, l = options.length; i < l; i++) {
+                handlePrevPerfis.push(options[i].id)
+            }
+            
+            // setPrevPerfis(handlePrevPerfis);
+
+            // for (var i = 0, l = options.length; i < l; i++) {
+            //     handlePerfis.push({id: options[i].id})
+            // }
+            setUserUpdate(prevUser=>({...prevUser, perfis:handlePrevPerfis }))
         }
 
     }, [user]);
@@ -108,9 +124,19 @@ const editarUser = () => {
 
     const handleSubmit = async (evt) => {
         evt.preventDefault();
-        console.log(userUpdate)
+        let objectUpdate = userUpdate;
+        let handlePerfis = [];
+
+        userUpdate.perfis.forEach(e=>{
+            handlePerfis.push({id: e, nome:""});
+        });
+        objectUpdate.perfis = handlePerfis;
+        console.log(handlePerfis)
+        console.log('objectUpdate',objectUpdate)
         
-        await axios.put(url,userUpdate).then(res => {
+        
+        await axios.put(url,objectUpdate).then(res => {
+            alert(`Resgistro ${objectUpdate.id} atualizado com sucesso1`)
             Router.push("/usuarios");
         }).catch(error =>{
             console.log(error.response)
@@ -119,6 +145,21 @@ const editarUser = () => {
             }
         });
     }
+
+    const handleMultiSelect = async (e) => {
+        e.preventDefault();
+        let handlePerfis = [];
+        const options = e.target.selectedOptions;
+
+        for (var i = 0, l = options.length; i < l; i++) {
+            handlePerfis.push(options[i].value);
+        }
+
+        setUserUpdate(prevUser=>({...prevUser, perfis:handlePerfis  }))
+        console.log(e.target.selectedOptions.length)
+        console.log(handlePerfis)
+    }
+
     return (
         <>
             <h2 className="text-4xl py-2">Editar Usuário #{user.id}</h2>
@@ -160,6 +201,17 @@ const editarUser = () => {
                         {cargos?.map((c)=>{
                             return(
                                 <option key={c.id} value={c.id}>{c.nome}</option>
+                            )
+                        })}
+                    </select>
+                </label>
+
+                <label className="block">
+                    <span className="text-gray-700 font-bold">Perfis do Usuário</span>
+                    <select value={userUpdate.perfis} onChange={e => handleMultiSelect(e)} className="form-multiselect block w-full mt-1" multiple>
+                        {perfis?.map((p)=>{
+                            return(
+                                <option key={p.id} value={p.id}>{p.nome}</option>
                             )
                         })}
                     </select>
