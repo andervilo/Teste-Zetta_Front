@@ -16,7 +16,7 @@ const editarUser = () => {
         cpf: "",
         sexo: "",
         dataNascimento: "",
-        cargoNome: 0,
+        cargoNome: "",
         perfis: [
         ]
     });
@@ -29,8 +29,7 @@ const editarUser = () => {
         cargoId: 0,
         perfis: [ ]
     })
-    const [prevPerfis, setPrevPerfis] = useState([]);
-    
+   
     const url = `${API_URL}/usuarios/${id}`;
 
     const urlCargos = `${API_URL}/cargos`;
@@ -38,7 +37,7 @@ const editarUser = () => {
     const urlPerfis = `${API_URL}/perfis-usuarios`;
 
     useEffect(() => {
-        getUser();
+        return setup();
         
     }, []);
 
@@ -50,18 +49,13 @@ const editarUser = () => {
         setUserUpdate(prevUser=>({...prevUser, cpf: user.cpf}))
 
         if(user.sexo !== "" && (userUpdate.sexo !== 'M' && userUpdate.sexo !== 'F')){
-            console.log(user)
             setUserUpdate(prevUser=>({...prevUser, sexo: user.sexo === 'Masculino' ? 'M' : 'F' }))
         }
-        
-        if(cargos.length <= 0){
-            getCargos();
-        }
 
-        if(perfis.length <= 0){
-            getPerfis();
+        if(cargos.length > 0 && user.cargoNome !==""){
+            setIdCargo(user.cargoNome);
         }
-
+       
         if(userUpdate.perfis.length === 0 && user.perfis.length > 0){
             let handlePrevPerfis = [];
             const options = user.perfis;
@@ -70,49 +64,48 @@ const editarUser = () => {
                 handlePrevPerfis.push(options[i].id)
             }
             
-            // setPrevPerfis(handlePrevPerfis);
-
-            // for (var i = 0, l = options.length; i < l; i++) {
-            //     handlePerfis.push({id: options[i].id})
-            // }
             setUserUpdate(prevUser=>({...prevUser, perfis:handlePrevPerfis }))
         }
 
-    }, [user]);
-
-    
-
-    useEffect(() => {
-        setIdCargo(user.cargoNome);
-    }, [cargos]);
+    }, [user]);    
 
     const setIdCargo = (descCargo) =>{
-        cargos?.forEach(cargo => {
-            if(cargo.nome === descCargo){
-                setUserUpdate(prevUser=>({...prevUser, cargoId:cargo.id  }))
-            }
-        });
+        const cargo_index = cargos?.findIndex(cargo => cargo.nome === descCargo);
+        const cargo_id = cargos[cargo_index].id;        
+        setUserUpdate(prevUser=>({...prevUser, cargoId: cargo_id  }));
     }
 
-    const getUser = async (id) => {        
-        await axios.get(url).then(res => {
-                setUser(res.data);
-            }
-        );
+    const setup = () => {
+        getUser();
+        getCargos();
+        getPerfis();
+    }
+
+    const getUser = async () => {   
+        try {
+            let res = await axios.get(url);
+            setUser(res.data);
+        } catch (error) {
+            alert(error.response.data.message);
+        } 
     };
 
-    const getCargos = async () => {        
-        await axios.get(urlCargos).then(res => {
-                setCargos(res.data.content);
-            }
-        );
+    const getCargos = async () => {  
+        try{
+            let res = await axios.get(urlCargos); 
+            setCargos(res.data.content);
+        }catch(error){
+            console.error('getCargos: ', error.response);
+        }
     };
 
-    const getPerfis = async () => {        
-        await axios.get(urlPerfis).then(res => {
-                setPerfis(res.data.content);
-            }
-        );
+    const getPerfis = async () => {   
+        try{
+            let res = await axios.get(urlPerfis); 
+            setPerfis(res.data.content);
+        }catch(error){
+            console.error('getPerfis: ', error.response);
+        }
     };
 
     const isNumber = (e) => {
@@ -131,19 +124,23 @@ const editarUser = () => {
             handlePerfis.push({id: e, nome:""});
         });
         objectUpdate.perfis = handlePerfis;
-        console.log(handlePerfis)
-        console.log('objectUpdate',objectUpdate)
-        
-        
-        await axios.put(url,objectUpdate).then(res => {
-            alert(`Resgistro ${objectUpdate.id} atualizado com sucesso1`)
+
+        try {
+            console.log('user', objectUpdate)
+            let res = await axios.put(url,objectUpdate);
+            alert(`Resgistro ${objectUpdate.id} atualizado com sucesso!`);
             Router.push("/usuarios");
-        }).catch(error =>{
-            console.log(error.response)
+        } catch (error) {
+            console.error('handleSubmit[POST]: ', error.response);
+            let messages = '';
             if ('fieldErrors' in error.response.data){
-                alert(error.response.data.fieldErrors.nome);
+                Object.keys(error.response.data.fieldErrors).forEach(function(key) {
+                    messages += error.response.data.fieldErrors[key] + '\n';
+                });
             }
-        });
+            console.log('messages', messages);
+            alert(messages);
+        }
     }
 
     const handleMultiSelect = async (e) => {
@@ -156,8 +153,6 @@ const editarUser = () => {
         }
 
         setUserUpdate(prevUser=>({...prevUser, perfis:handlePerfis  }))
-        console.log(e.target.selectedOptions.length)
-        console.log(handlePerfis)
     }
 
     return (
